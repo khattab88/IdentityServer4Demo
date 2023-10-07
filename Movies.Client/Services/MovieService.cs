@@ -10,7 +10,32 @@ namespace Movies.Client.Services
 {
     public class MovieService : IMovieService
     {
+        private readonly IHttpClientFactory _httpClientFactory;
+
+        public MovieService(IHttpClientFactory httpClientFactory)
+        {
+            _httpClientFactory = httpClientFactory;
+        }
+
         public async Task<IEnumerable<Movie>> GetMovies()
+        {
+            var httpClient = _httpClientFactory.CreateClient("MovieAPIClient");
+
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/movies");
+
+            var response = await httpClient.SendAsync(
+                request, HttpCompletionOption.ResponseHeadersRead)
+                .ConfigureAwait(false);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            List<Movie> movies = JsonConvert.DeserializeObject<List<Movie>>(content);
+            return movies;
+        }
+
+        public async Task<IEnumerable<Movie>> GetMovies_Old()
         {
             // 1. get token from identity server
             // 2. send request to protected api

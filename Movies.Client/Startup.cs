@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Tokens;
 using IdentityModel;
+using Microsoft.Net.Http.Headers;
+using Movies.Client.HttpHandlers;
 
 namespace Movies.Client
 {
@@ -33,6 +35,18 @@ namespace Movies.Client
             services.AddControllersWithViews();
 
             services.AddScoped<IMovieService, MovieService>();
+
+
+            // http operations
+            // 1 create an HttpClient used for accessing the Movies.API
+            services.AddTransient<AuthenticationDelegatingHandler>();
+
+            services.AddHttpClient("MovieAPIClient", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:5001/");
+                client.DefaultRequestHeaders.Clear();
+                client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
+            }).AddHttpMessageHandler<AuthenticationDelegatingHandler>();
 
 
             services.AddAuthentication(options =>
