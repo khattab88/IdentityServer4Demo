@@ -57,17 +57,15 @@ namespace Movies.Client
                 client.DefaultRequestHeaders.Add(HeaderNames.Accept, "application/json");
             });
 
-            // services.AddHttpContextAccessor();
+            //services.AddSingleton(new ClientCredentialsTokenRequest
+            //{
+            //    Address = "https://localhost:5005/connect/token",
+            //    ClientId = "movieClient",
+            //    ClientSecret = "secret",
+            //    Scope = "movieAPI"
+            //});
 
-            services.AddSingleton(new ClientCredentialsTokenRequest
-            {
-                Address = "https://localhost:5005/connect/token",
-                ClientId = "movieClient",
-                ClientSecret = "secret",
-                Scope = "movieAPI"
-            });
-
-
+            services.AddHttpContextAccessor();
 
 
             services.AddAuthentication(options =>
@@ -82,7 +80,7 @@ namespace Movies.Client
 
                     options.ClientId = "movies_mvc_client";
                     options.ClientSecret = "secret";
-                    options.ResponseType = "code";
+                    options.ResponseType = "code id_token";
 
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
@@ -96,7 +94,7 @@ namespace Movies.Client
                     //options.ClaimActions.DeleteClaim("auth_time");
                     //options.ClaimActions.MapUniqueJsonKey("role", "role");
 
-                    //options.Scope.Add("movieAPI");
+                    options.Scope.Add("movieAPI");
 
                     options.SaveTokens = true;
                     options.GetClaimsFromUserInfoEndpoint = true;
